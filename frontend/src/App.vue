@@ -1,51 +1,58 @@
+<script setup lang="ts">
+import {RouterView} from 'vue-router'
+import {Close, Header, HeaderNav, HeaderNavItem, Toast, Toasts} from "agnostic-vue";
+import {activeToasts} from "@/ts/toasts";
+
+import 'agnostic-vue/dist/common.min.css';
+import "agnostic-vue/dist/index.css";
+</script>
+
 <template>
-    <div id="app">
-        <!-- this navigation will appear on every route -->
+  <div id="app">
+    <Header isHeaderContentStart>
+      <template v-slot:headernav>
+        <HeaderNav>
+          <HeaderNavItem>
+            <RouterLink to="/">Home</RouterLink>
+          </HeaderNavItem>
+          <HeaderNavItem>
+            <RouterLink to="/about">About</RouterLink>
+          </HeaderNavItem>
+          <HeaderNavItem>
+            <RouterLink to="/cats">Cats</RouterLink>
+          </HeaderNavItem>
+        </HeaderNav>
+      </template>
+    </Header>
 
-        <b-navbar toggleable="lg" type="dark" variant="primary">
-            <b-navbar-brand to="/">
-                <img alt="Vue logo" src="./assets/logo.png" class="logo" />
-                Home
-            </b-navbar-brand>
-
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
-            <b-collapse id="nav-collapse" is-nav>
-                <b-navbar-nav>
-                    <b-nav-item to="/about">About</b-nav-item>
-                    <b-nav-item to="/cats">Cats</b-nav-item>
-                </b-navbar-nav>
-
-                <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto">
-                    <b-nav-item-dropdown text="Dropdown Test" right>
-                        <b-dropdown-item href="#">Option 1</b-dropdown-item>
-                        <b-dropdown-item href="#">Option 2</b-dropdown-item>
-                        <b-dropdown-item href="#">Option 3</b-dropdown-item>
-                    </b-nav-item-dropdown>
-                </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
-
-        <!-- the different view templates will appear in this HTML element based on the route -->
-        <div class="main">
-            <router-view></router-view>
-        </div>
+    <div class="main">
+      <RouterView/>
     </div>
+  </div>
+
+  <Toasts vertical-position="top" horizontal-position="end">
+    <template v-for="toast of activeToasts" :key="toast.key">
+      <Toast :type="toast.type" class="alert alert-border-left alert-info">
+        <div class="flex-fill flex flex-column">
+          <div class="flex">
+            <h3 class="flex-fill">{{ toast.title }}</h3>
+            <Close @click="toast.close()"/>
+          </div>
+          <div class="flex">
+            <font-awesome-icon :icon="toast.icon" size="xl" class="mie8 pbs2"></font-awesome-icon>
+            <div class="flex-fill">
+              {{ toast.message }}
+            </div>
+          </div>
+        </div>
+      </Toast>
+      <div class="mbe14"/>
+    </template>
+  </Toasts>
 </template>
 
-<style>
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    color: #2c3e50;
-}
-
-.logo {
-    height: 35px;
-    margin: 0 3px;
-}
-
+<style scoped>
 .main {
-    padding: 10px 20px;
+  padding: 10px 20px;
 }
 </style>

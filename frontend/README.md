@@ -1,35 +1,36 @@
-# Vue.js Frontend
+# frontend
 
-> This is an example project for a single page application frontend with Vue.js v2. The UI is accessible under http://localhost:8000.
+This is an example project for a single page application frontend with Vue.js v3. The UI is accessible under http://localhost:5173.
 
 ## Prerequisites
 
-Install [Node.js](https://nodejs.org) and ensure that the root folder of its installation is added to your `PATH`. You can check with this command: `echo %PATH%` (or `echo $PATH` on Linux / Git Bash).
+Install [Node.js](https://nodejs.org/en/) and ensure that the root folder of its installation is added to your PATH. You can check with this command: echo %PATH% (or echo $PATH on Linux / Git Bash).
 
-## Usage
+## Development Setup
 
-```bash
-# install dependencies
+There are multiple possibilities, here a few examples:
+- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- [WebStorm](https://www.jetbrains.com/webstorm/) (brings the required plugins natively)
+- your favorite text editor + CLI
+
+## Project Setup
+
+Install the required dependencies with
+```sh
 npm install
-
-# start with hot-reload for development
-# --> http://localhost:8000
-npm run serve
-
-# compile and minify for production --> ./dist folder
-npm run build
-
-# lint and fix files
-npm run lint
 ```
 
-After you run the project, you should be able to see the UI in your browser (http://localhost:8000).
+Then you are good to go with
+```sh
+npm run dev
+```
 
-## Documentation
+To deploy your code to production, you can compile and minify using
+```sh
+npm run build
+```
 
-- General Vue.js documentation: https://v2.vuejs.org/v2/guide
-- Vue Router documentation: https://v3.router.vuejs.org
-- Vue CLI documentation: https://cli.vuejs.org/guide
-- Bootstrap CSS framework: https://getbootstrap.com/docs/4.6/layout/overview
-- BootstrapVue UI components: https://bootstrap-vue.org/docs/components
-
+Also, there is linter available:
+```sh
+npm run lint
+```
