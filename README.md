@@ -19,9 +19,9 @@
 Assuming all prerequisites are fulfilled, you can follow these instructions to get to know the application:
 
 ### Testing the backend
-- Open http://localhost:8080/api/v1/cats in your browser. It will show all available cats in the system.
-- Open http://localhost:8080/api/v1/cats/1 in your browser. It will show the cat with ID `1`.
-- Open http://localhost:8080/api/v1/cats/42 in your browser. It will show a `404 Not found` error because there is no cat with ID `42` in the system.
+- Open http://localhost:8080/api/v1/todos in your browser. It will show all available todos in the system.
+- Open http://localhost:8080/api/v1/todos/1 in your browser. It will show the todo with ID `1`.
+- Open http://localhost:8080/api/v1/todos/42 in your browser. It will show a `404 Not found` error because there is no todo with ID `42` in the system.
 
 ### Testing the frontend
 - It will host the UI at http://localhost:5173, which you can now also open in your browser.
