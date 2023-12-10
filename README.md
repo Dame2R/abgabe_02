@@ -25,5 +25,5 @@ Assuming all prerequisites are fulfilled, you can follow these instructions to g
 
 ### Testing the frontend
 - It will host the UI at http://localhost:5173, which you can now also open in your browser.
-- Navigate to the cats view by clicking on the respective menu item or via the direct ULR http://localhost:5173/#/cats.
-- Delete a cat. Then confirm its deletion via the API by opening http://localhost:8080/api/v1/cats in your browser again.
+- Navigate to the cats view by clicking on the respective menu item or via the direct ULR http://localhost:5173/#/todos.
+- Delete a cat. Then confirm its deletion via the API by opening http://localhost:8080/api/v1/todos in your browser again.
