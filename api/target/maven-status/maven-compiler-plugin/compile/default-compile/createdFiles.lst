@@ -1,0 +1,8 @@
+de\unistuttgart\iste\ese\api\assignees\AssigneeController.class
+de\unistuttgart\iste\ese\api\Application.class
+de\unistuttgart\iste\ese\api\assignees\Assignee.class
+de\unistuttgart\iste\ese\api\assignees\AssigneeRepository.class
+de\unistuttgart\iste\ese\api\todos\ToDo.class
+de\unistuttgart\iste\ese\api\Application$1.class
+de\unistuttgart\iste\ese\api\todos\ToDoController.class
+de\unistuttgart\iste\ese\api\todos\ToDoRepository.class
