@@ -20,16 +20,14 @@ public class AssigneeController {
     @Autowired
     private ToDoRepository todoRepository;
 
-
-
-
+    //List all Assignees
     @GetMapping("/assignees")
     public List<Assignee> getAssignees() {
         List<Assignee> allAssignees = (List<Assignee>) assigneeRepository.findAll();
         return allAssignees;
     }
 
-    // get a single Assignee
+    // List a single Assignee by ID
     @GetMapping("/assignees/{id}")
     public Assignee getAssignee(@PathVariable("id") long id) {
 
@@ -41,35 +39,47 @@ public class AssigneeController {
             String.format("Assignee with ID %s not found!", id));
     }
 
-    // create an Assignee
+    // Create a new Assignee
     @PostMapping("/assignees")
     @ResponseStatus(HttpStatus.CREATED)
     public Assignee createAssignee(@Valid @RequestBody Assignee requestBody) {
+       // Validierung für prename, name und email
+       if (requestBody.getPrename().isEmpty() || requestBody.getName().isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prename and name must not be empty");
+        }
+        if (!requestBody.getEmail().endsWith("uni-stuttgart.de")) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email must end with uni-stuttgart.de");
+        }
+
         Assignee assignee = new Assignee(
             requestBody.getPrename(),
             requestBody.getName(),
             requestBody.getEmail()
         );
-        Assignee savedAssignee = assigneeRepository.save(assignee);
-        return savedAssignee;
+    return assigneeRepository.save(assignee);
     }
 
-    // update an Assignee
+    // Update an existing Assignee by ID
     @PutMapping("/assignees/{id}")
     public Assignee updateAssignee(@PathVariable("id") long id, @Valid @RequestBody Assignee requestBody) {
+        // Validierung für prename, name und email
+        if (requestBody.getPrename().isEmpty() || requestBody.getName().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prename and name must not be empty");
+        }
+        if (!requestBody.getEmail().endsWith("uni-stuttgart.de")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email must end with uni-stuttgart.de");
+        }
 
-        requestBody.setId(id);
         Assignee assigneeToUpdate = assigneeRepository.findById(id);
-
-
         if (assigneeToUpdate != null) {
-            Assignee savedAssignee= assigneeRepository.save(requestBody);
-            return savedAssignee;
+            requestBody.setId(id);
+            return assigneeRepository.save(requestBody);
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
             String.format("Assignee with ID %s not found!", id));
     }
 
+    //  Delete an existing Assignee by ID
     @DeleteMapping("/assignees/{id}")
     public Assignee deleteAssignee(@PathVariable("id") long id) {
 

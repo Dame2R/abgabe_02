@@ -1,11 +1,11 @@
 package de.unistuttgart.iste.ese.api.todos;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,21 +20,20 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 @RestController
 public class ToDoController {
-
     @Autowired
     private ToDoRepository todoRepository;
     @Autowired
     private AssigneeRepository assigneeRepository;
     
     
-    //get all ToDos
+    //List all ToDos
     @GetMapping("/todos")
     public List<ToDo> getToDos() {
         List<ToDo> allToDos = (List<ToDo>) todoRepository.findAll();
         return allToDos;
     }
 
-    // get a single ToDo
+    // List a single ToDo by ID
     @GetMapping("/todos/{id}")
     public ToDo getToDo(@PathVariable("id") long id) {
 
@@ -46,7 +45,7 @@ public class ToDoController {
             String.format("Todo with ID %s not found!", id));
     }
 
-    // create a ToDo
+    // Create a new ToDo
     @PostMapping("/todos")
     @ResponseStatus(HttpStatus.CREATED)
     public ToDo createToDo(@Valid @RequestBody String requestBody) {
@@ -56,47 +55,48 @@ public class ToDoController {
         
                
         try{
-            JsonNode savedToDo = objectMapper.readTree(requestBody);
+            JsonNode inputToDo = objectMapper.readTree(requestBody);
             
-            if(!savedToDo.has("title") || savedToDo.get("title").asText().isBlank()){
+            if(!inputToDo.has("title") || inputToDo.get("title").asText().isBlank()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
             else{
-                
-            
-                String title = savedToDo.get("title").asText();
+                String title = inputToDo.get("title").asText();
                 toDo.setTitle(title);
                 System.out.println("title: " + title);
             }
-            if (savedToDo.has("description")){
-                String description = savedToDo.get("description").asText();
+            if (inputToDo.has("description")){
+                String description = inputToDo.get("description").asText();
                 System.out.println("description: " + description);
                 toDo.setDescription(description);
             }
-            if (savedToDo.has("assigneeIdList")){
-                JsonNode assignedIdList = savedToDo.get("assigneeIdList");
+            // ...
+
+            // Assignee-ID-Liste validieren
+            if (inputToDo.has("assigneeIdList")){
+                JsonNode assignedIdList = inputToDo.get("assigneeIdList");
                 if(assignedIdList.isArray()){
                     ArrayNode assignedIdArray= (ArrayNode) assignedIdList;
-                    Set<Assignee> assigneeList = new HashSet<>();
+                    Set<Assignee> assigneeSet = new HashSet<>();
                     for(int index=0; index<assignedIdArray.size(); index++){
-                    
-                        if(
-                           assigneeRepository.findById(assignedIdArray.get(index).asInt())==null||
-                            !assigneeList.add(assigneeRepository.findById(assignedIdArray.get(index).asInt()))){
-                            
-                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                        Assignee assignee = assigneeRepository.findById(assignedIdArray.get(index).asInt());
+                        if(assignee == null || !assigneeSet.add(assignee)){
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid assigneeId");
                         }
                     }
-                    toDo.setAssigneeList(assigneeList.stream().toList());
+                    List<Assignee> assigneeList = new ArrayList<>(assigneeSet);
+                    toDo.setAssigneeList(assigneeList);
                 }
-                
             }
-            if (savedToDo.has("dueDate")){
+
+            // ...
+
+            if (inputToDo.has("dueDate")){
                 
-                if (!savedToDo.get("dueDate").asText().matches("[0-9]+")){
+                if (!inputToDo.get("dueDate").asText().matches("[0-9]+")){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
-                Long date= savedToDo.get("dueDate").asLong();
+                Long date= inputToDo.get("dueDate").asLong();
                 Date dueDate= new Date(date);
                 System.out.println("dueDate: " + dueDate);
                 toDo.setDueDate(dueDate);
@@ -113,10 +113,9 @@ public class ToDoController {
         
     }
 
-    // update an ToDo
+    // Update an existing ToDo by ID
     @PutMapping("/todos/{id}")
     public ToDo updateToDo(@PathVariable("id") long id, @Valid @RequestBody String requestBody) {
-        
         
         ObjectMapper objectMapper = new ObjectMapper();
         ToDo toDoToUpdate = todoRepository.findById(id);
@@ -125,23 +124,23 @@ public class ToDoController {
                 ToDo toDo = new ToDo( );
                 toDo.setId(id);
                 
-                JsonNode savedToDo = objectMapper.readTree(requestBody);
-                if(!savedToDo.has("title") || savedToDo.get("title").asText().isBlank()){
+                JsonNode inputToDo = objectMapper.readTree(requestBody);
+                if(!inputToDo.has("title") || inputToDo.get("title").asText().isBlank()){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
                 else{
                
-                    String title = savedToDo.get("title").asText();
+                    String title = inputToDo.get("title").asText();
                     toDo.setTitle(title);
                     System.out.println("title: " + title);
                 }
-                if (savedToDo.has("description")){
-                    String description = savedToDo.get("description").asText();
+                if (inputToDo.has("description")){
+                    String description = inputToDo.get("description").asText();
                     System.out.println("description: " + description);
                     toDo.setDescription(description);
                 }
-                if (savedToDo.has("assigneeIdList")){
-                    JsonNode assignedIdList = savedToDo.get("assigneeIdList");
+                if (inputToDo.has("assigneeIdList")){
+                    JsonNode assignedIdList = inputToDo.get("assigneeIdList");
                     if(assignedIdList.isArray()){
                         ArrayNode assignedIdArray= (ArrayNode) assignedIdList;
                         Set<Assignee> assigneeList = new HashSet<>();
@@ -158,25 +157,24 @@ public class ToDoController {
                     }
 
                 }
-                if (savedToDo.has("dueDate")){
+                if (inputToDo.has("dueDate")){
 
-                    if (!savedToDo.get("dueDate").asText().matches("[0-9]+")){
+                    if (!inputToDo.get("dueDate").asText().matches("[0-9]+")){
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                     }
-                    Long date= savedToDo.get("dueDate").asLong();
+                    Long date= inputToDo.get("dueDate").asLong();
                     Date dueDate= new Date(date);
                     System.out.println("dueDate: " + dueDate);
                     toDo.setDueDate(dueDate);
 
                 }
 
-                if (savedToDo.has("finished")){
-
-                    if(savedToDo.get("finished").asBoolean()){
-                        toDo.setFinished(true);
-                        toDo.setFinishedDate(new Date());
+                if (inputToDo.has("finished")){
+                    boolean finished = inputToDo.get("finished").asBoolean();
+                    toDo.setFinished(finished);
+                    if(finished) {
+                        toDo.setFinishedDate(new Date()); // Setzt das Finished-Datum, wenn ToDo als abgeschlossen markiert wird.
                     }
-
                 }
                 
                 todoRepository.save(toDo);
@@ -193,20 +191,21 @@ public class ToDoController {
             String.format("ToDo with ID %s not found!", id));
     }
 
+    // Delete existing ToDo by ID
     @DeleteMapping("/todos/{id}")
     public ToDo deleteToDo(@PathVariable("id") long id) {
 
-        ToDo toDoToDelete = todoRepository.findById(id);
-        if (toDoToDelete != null) {
+        ToDo deleteToDo = todoRepository.findById(id);
+        if (deleteToDo != null) {
             
-            toDoToDelete.setAssigneeList(null);
-            todoRepository.save(toDoToDelete);
+            deleteToDo.setAssigneeList(null);
+            todoRepository.save(deleteToDo);
             todoRepository.deleteById(id);
              
-            return toDoToDelete;
+            return deleteToDo;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-            String.format("ToDO with ID %s not found!", id));
+            String.format("Requested ToDo with ID %s was not found!", id));
     }
     
     
